@@ -5,14 +5,30 @@
   <script src="https://d3js.org/d3.v4.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css">
   <script>
-    const client = new stitch.StitchClient("dmcoms_stitch-kiuef");
-    const cluster = client.service("mongodb", "mongodb-atlas")
-    const db = cluster.db("SalesReporting");
-    const tempData = db.collection("Receipts");
+    // const client = new stitch.StitchClient("dmcoms_stitch-kiuef");
+    // const cluster = client.service("mongodb", "mongodb-atlas")
+    // const db = cluster.db("SalesReporting");
+    // const tempData = db.collection("Receipts");
+    let cluster, db, tempData, stitchClient = null;
+      function onLoad() {
+        stitch.StitchClientFactory.create('dmcoms_stitch-kiuef')
+          .then(sc => {
+            stitchClient = sc;
+            const cluster = stitchClient.service("mongodb", "mongodb-atlas")
+            const db = cluster.db("SalesReporting");
+            const tempData = db.collection("Receipts");
+            stitchClient.login()
+              .then(function () {
+                console.log('beginning to build graph');
+                buildGraph()
+              });
+          })
+          .catch(console.error.bind(console));
+      }
   </script>
 </head>
 
-<body onload="client.login().then(function(){buildGraph()});">
+<body onload="onLoad();">
 <!-- <body onload="simpleAuth();"> -->
 
 <h1 align="center">Sales Dashboard</h1>
@@ -60,13 +76,13 @@
     function simpleAuth(){
       var userid = prompt("Enter your User ID:","");
       var password = prompt("Enter your Password:","");
-      client.login(userid, password).then(function(){buildGraph()});
+      stitchClient.login(userid, password).then(function(){buildGraph()});
     }
 
     function buildGraph(){
   		// Use Stitch to pull the latest data and then graph it
       var now = Date.now();
-  		client.executeFunction("SalesTimeline", (now - duration), now).then(docs => {
+  		stitchClient.executeFunction("SalesTimeline", (now - duration), now).then(docs => {
         var SalesLine = docs.map(function(x){return {timestamp : x["timestamp"], total : x["total"]}});
 
     		// Plot the data and then call the refresh loop
@@ -83,7 +99,7 @@
           then = SalesLine[SalesLine.length-1].timestamp;
 
       // Get any new sales data from Stitch
-      client.executeFunction("SalesTimeline", then, now).then(docs => {
+      stitchClient.executeFunction("SalesTimeline", then, now).then(docs => {
         var newPts = docs.map(function(x){return {timestamp : x["timestamp"], total : x["total"]}});
 
         if(newPts.length > 0){
