@@ -7,7 +7,7 @@ const TOPPINGS = ["Pepperoni", "Mushrooms", "Onions", "Sausage", "Bacon", "Extra
 const SIZES = ["Personal", "Small", "Medium", "Large", "X-tra Large"];
 
 // Set-up DB Connection
-const clientPromise = stitch.StitchClientFactory.create("<YOUR APP ID>");
+const clientPromise = stitch.StitchClientFactory.create("dmcoms_stitch-kiuef");
 
 // Send sample data while within this loop
 function generateReceipts(salesData){
