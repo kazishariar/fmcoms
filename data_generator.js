@@ -37,8 +37,8 @@ clientPromise.then(client => {
   const salesData = db.collection("Receipts");
 
   // Authenticate anonymously and then begin to load data
-  client.login().then(() => generateReceipts(salesData));
+//  client.login().then(() => generateReceipts(salesData));
 
   // Alternatively Use the API Key to load data more securely
-  // client.authenticate("apiKey", "<YOUR API KEY>").then(() => generateReceipts(salesData));
+  client.authenticate("apiKey", "UnvvoNcE1C70suNnEy9oJ79U66zcjTVhoKRvqYbLnuvIOQSgKH7BEmRucXjgcDU4").then(() => generateReceipts(salesData));
 })
